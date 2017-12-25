@@ -78,6 +78,13 @@ Main.Main = class {
     console.timeStamp('Main._gotPreferences');
     if (Host.isUnderTest(prefs))
       self.runtime.useTestBase();
+    // for dirac testing
+    if (Runtime.queryParam("reset_settings")) {
+      dirac.feedback("reset devtools settings");
+      console.info("DIRAC TESTING: clear devtools settings because reset_settings is present in url params");
+      window.localStorage.clear(); // also wipe-out local storage to prevent tests flakiness
+      prefs = {};
+    }
     this._createSettings(prefs);
     this._createAppUI();
   }
@@ -286,6 +293,7 @@ Main.Main = class {
       setTimeout(this._initializeTarget.bind(this), 0);
     }
     Main.Main.timeEnd('Main._showAppUI');
+    dirac.feedback("devtools ready");
   }
 
   _initializeTarget() {
@@ -308,7 +316,8 @@ Main.Main = class {
     console.timeStamp('Main._lateInitialization');
     this._registerShortcuts();
     Extensions.extensionServer.initializeExtensions();
-    if (!Host.isUnderTest())
+    dirac.notifyFrontendInitialized();
+    if (Runtime.queryParam('show-release-notes') && !Host.isUnderTest()) // don't show release notes in Dirac fork
       Help.showReleaseNoteIfNeeded();
   }
 

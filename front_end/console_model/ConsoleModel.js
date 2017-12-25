@@ -175,6 +175,14 @@ ConsoleModel.ConsoleModel = class extends Common.Object {
         msg.type === ConsoleModel.ConsoleMessage.MessageType.Clear)
       this._clearIfNecessary();
 
+    if (msg.parameters) {
+      var firstParam = msg.parameters[0];
+      if (firstParam && firstParam.value == "~~$DIRAC-MSG$~~") {
+        this.dispatchEventToListeners(ConsoleModel.ConsoleModel.Events.DiracMessage, msg);
+        return;
+      }
+    }
+
     this._messages.push(msg);
     var runtimeModel = msg.runtimeModel();
     if (msg._exceptionId && runtimeModel) {
@@ -402,6 +410,7 @@ ConsoleModel.ConsoleModel = class extends Common.Object {
 /** @enum {symbol} */
 ConsoleModel.ConsoleModel.Events = {
   ConsoleCleared: Symbol('ConsoleCleared'),
+  DiracMessage: Symbol("DiracMessage"),
   MessageAdded: Symbol('MessageAdded'),
   MessageUpdated: Symbol('MessageUpdated'),
   CommandEvaluated: Symbol('CommandEvaluated')
@@ -678,6 +687,8 @@ ConsoleModel.ConsoleMessage.MessageType = {
   Result: 'result',
   Profile: 'profile',
   ProfileEnd: 'profileEnd',
+  DiracCommand: "diracCommand",
+  DiracMarkup: "diracMarkup",
   Command: 'command',
   System: 'system'
 };

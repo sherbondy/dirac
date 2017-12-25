@@ -360,7 +360,7 @@ SDK.TargetManager = class extends Common.Object {
     var wsParam = Runtime.queryParam('ws');
     var wssParam = Runtime.queryParam('wss');
     if (wsParam || wssParam) {
-      var ws = wsParam ? `ws://${wsParam}` : `wss://${wssParam}`;
+      var ws = wsParam ? `ws://${decodeURIComponent(wsParam)}` : `wss://${decodeURIComponent(/** @type {string} */(wssParam))}`;
       this._mainConnection = new SDK.WebSocketConnection(ws, this._webSocketConnectionLostCallback, params);
     } else if (InspectorFrontendHost.isHostedMode()) {
       this._mainConnection = new SDK.StubConnection(params);

@@ -99,6 +99,14 @@ Bindings.NetworkProject = class {
   }
 
   /**
+   * @param {!Workspace.UISourceCode} uiSourceCode
+   * @return {?SDK.Script}
+   */
+  static getScriptFromSourceCode(uiSourceCode) {
+    return uiSourceCode[Bindings.NetworkProject._scriptSymbol];
+  }
+
+  /**
    * @param {!SDK.Target} target
    * @param {string} frameId
    * @param {boolean} isContentScripts
@@ -278,6 +286,7 @@ Bindings.NetworkProject = class {
     var frameId = Bindings.frameIdForScript(script);
     script[Bindings.NetworkProject._frameIdSymbol] = frameId;
     var uiSourceCode = this._createFile(originalContentProvider, frameId, script.isContentScript());
+    uiSourceCode[Bindings.NetworkProject._scriptSymbol] = script;
     var metadata = Bindings.metadataForURL(this._target, frameId, uiSourceCode.url());
     this._addUISourceCodeWithProvider(uiSourceCode, originalContentProvider, metadata, 'text/javascript');
   }
@@ -356,6 +365,7 @@ Bindings.NetworkProject = class {
 };
 
 Bindings.NetworkProject._networkProjectSymbol = Symbol('networkProject');
+Bindings.NetworkProject._scriptSymbol = Symbol('script');
 Bindings.NetworkProject._targetSymbol = Symbol('target');
 Bindings.NetworkProject._frameIdSymbol = Symbol('frameid');
 

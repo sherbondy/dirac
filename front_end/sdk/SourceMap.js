@@ -113,6 +113,11 @@ SDK.SourceMap.prototype = {
   url() {},
 
   /**
+   * @return {?SDK.SourceMapV3}
+   */
+  payload: function() {},
+
+  /**
    * @return {!Array<string>}
    */
   sourceURLs() {},
@@ -200,6 +205,7 @@ SDK.TextSourceMap = class {
         SDK.TextSourceMap._base64Map[base64Digits.charAt(i)] = i;
     }
 
+    this._payload = payload;
     this._json = payload;
     this._compiledURL = compiledURL;
     this._sourceMappingURL = sourceMappingURL;
@@ -266,6 +272,14 @@ SDK.TextSourceMap = class {
 
   /**
    * @override
+   * @return {?SDK.SourceMapV3}
+   */
+  payload() {
+    return this._payload;
+  }
+
+  /**
+   * @override
    * @return {!Array.<string>}
    */
   sourceURLs() {
@@ -322,8 +336,7 @@ SDK.TextSourceMap = class {
    */
   findEntry(lineNumber, columnNumber) {
     var mappings = this.mappings();
-    var index = mappings.upperBound(
-        undefined, (unused, entry) => lineNumber - entry.lineNumber || columnNumber - entry.columnNumber);
+    var index = mappings.upperBound(undefined, (unused, entry) => lineNumber - entry.lineNumber || columnNumber - entry.columnNumber);
     return index ? mappings[index - 1] : null;
   }
 
@@ -337,7 +350,7 @@ SDK.TextSourceMap = class {
     var mappings = this._reversedMappings(sourceURL);
     var first = mappings.lowerBound(lineNumber, lineComparator);
     var last = mappings.upperBound(lineNumber, lineComparator);
-    if (first >= mappings.length || mappings[first].sourceLineNumber !== lineNumber)
+    if (first >= mappings.length || mappings[first].sourceLineNumber !==lineNumber )
       return null;
     var columnMappings = mappings.slice(first, last);
     var index =
